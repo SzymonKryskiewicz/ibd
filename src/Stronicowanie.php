@@ -39,12 +39,11 @@ class Stronicowanie
      */
     private array $parametryZapytania;
 
-    public function __construct(array $parametryGet , array $parametryZapytania = [])
+    public function __construct(array $parametryGet, array $parametryZapytania = [])
     {
         $this->db = new Db();
         $this->parametryGet = $parametryGet;
         $this->parametryZapytania = $parametryZapytania;
-
         if (!empty($parametryGet['strona'])) {
             $this->strona = (int)$parametryGet['strona'];
         }
@@ -88,8 +87,80 @@ class Stronicowanie
                 );
             }
         }
-        $linki .= "</ul></nav>";
+        $linki .= "</ul>";
 
+        //Dodanie nawiagacji do strony pierwszej, poprzedniej, następnej i ostatniej po spełnieniu warunku, że liczba stron jest większa niż 1
+        if ($liczbaStron > 1) {
+            $linki .= "<ul class='pagination'>";
+            //Link do pierwszej podstrony
+            if ($this->strona == 0) {
+                $linki .= sprintf("<li class='page-item active'><a class='page-link'>%s</a></li>", "Początek");
+            } else {
+                $linki .= sprintf(
+                    "<li class='page-item'><a href='%s?%s&strona=%d' class='page-link'>%s</a></li>",
+                    $plik,
+                    $parametry,
+                    0,
+                    "Początek"
+                );
+            }
+
+            //Link do strony poprzedniej
+            if ($this->strona == 0) {
+                $linki .= sprintf("<li class='page-item disabled'><a class='page-link'>%s</a></li>", "Poprzednia");
+            } else {
+                $linki .= sprintf(
+                    "<li class='page-item'><a href='%s?%s&strona=%d' class='page-link'>%s</a></li>",
+                    $plik,
+                    $parametry,
+                    $this->strona - 1,
+                    "Poprzednia"
+                );
+            }
+            //Link do strony nastepnej
+            if ($this->strona == $liczbaStron - 1) {
+                $linki .= sprintf("<li class='page-item disabled'><a class='page-link'>%s</a></li>", "Następna");
+            } else {
+                $linki .= sprintf(
+                    "<li class='page-item'><a href='%s?%s&strona=%d' class='page-link'>%s</a></li>",
+                    $plik,
+                    $parametry,
+                    $this->strona + 1,
+                    "Następna"
+                );
+            }
+
+            //Link do ostatniej strony
+            if ($this->strona == $liczbaStron - 1) {
+                $linki .= sprintf("<li class='page-item active'><a class='page-link'>%s</a></li>", "Koniec");
+            } else {
+                $linki .= sprintf(
+                    "<li class='page-item'><a href='%s?%s&strona=%d' class='page-link'>%s</a></li>",
+                    $plik,
+                    $parametry,
+                    $liczbaStron - 1,
+                    "Koniec"
+                );
+            }
+            $linki .= "</ul>";
+        }
+        //Dodanie informacji o liczbie wybranych rekordow i obecnie wyswietlanych
+        $linki .= "</ul></nav>";
+        $linki .= "<p align='left'>Wyświetlono ";
+        if ($rekordow > 0){
+            $linki .= sprintf($this->strona * $this->naStronie + 1);
+            $linki .= " - ";
+            //Jeżeli jest wyświetlona ostatnia strona
+            if ($this->strona == $liczbaStron - 1) {
+                $linki .= sprintf($rekordow);
+            } //Jeżeli jest wyświetlona inna niż ostatnia strona
+            else {
+                $linki .= sprintf($this->strona * $this->naStronie + $this->naStronie);
+            }
+            $linki .= " z ";
+        }
+        $linki .= sprintf($rekordow);
+        $linki .= " rekordów</p>";
         return $linki;
     }
 
@@ -107,7 +178,6 @@ class Stronicowanie
             if (!in_array($kl, $usun))
                 $temp[] = "$kl=$wart";
         }
-
         return implode('&', $temp);
     }
 }

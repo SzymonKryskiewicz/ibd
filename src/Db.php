@@ -36,11 +36,13 @@ class Db
         $stmt = $this->pdo->prepare($sql);
 
         if (!empty($params) && is_array($params)) {
-            foreach ($params as $k => $v)
+            foreach ($params as $k => &$v)
                 $stmt->bindParam($k, $v);
         }
-
         return $stmt->execute() ? $stmt->fetchAll(\PDO::FETCH_ASSOC) : null;
+
+
+
     }
 
     /**
@@ -70,7 +72,7 @@ class Db
         $stmt = $this->pdo->prepare($sql);
 
         if (!empty($params) && is_array($params)) {
-            foreach($params as $k => $v) {
+            foreach($params as $k => &$v) {
                 $stmt->bindParam($k, $v);
             }
         }

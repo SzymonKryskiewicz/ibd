@@ -12,12 +12,12 @@ $listaKategorii = $kategorie->pobierzWszystkie();
 // pobieranie książek
 $ksiazki = new Ksiazki();
 $zapytanie = $ksiazki->pobierzZapytanie($_GET);
-
 // dodawanie warunków stronicowania i generowanie linków do stron
 $stronicowanie = new Stronicowanie($_GET, $zapytanie['parametry']);
 $linki = $stronicowanie->pobierzLinki($zapytanie['sql'], 'ksiazki.lista.php');
 $select = $stronicowanie->dodajLimit($zapytanie['sql']);
 $lista = $ksiazki->pobierzStrone($select, $zapytanie['parametry']);
+
 ?>
 
     <h1>Książki</h1>
@@ -55,6 +55,14 @@ $lista = $ksiazki->pobierzStrone($select, $zapytanie['parametry']);
                 <?= ($_GET['sortowanie'] ?? '') == 'k.cena DESC' ? 'selected' : '' ?>
             >cenie malejąco
             </option>
+            <option value="a.nazwisko ASC"
+                <?= ($_GET['sortowanie'] ?? '') == 'a.nazwisko ASC' ? 'selected' : '' ?>
+            >nazwisku rosnąco
+            </option>
+            <option value="a.nazwisko DESC"
+                <?= ($_GET['sortowanie'] ?? '') == 'a.nazwisko DESC' ? 'selected' : '' ?>
+            >nazwisku malejąco
+            </option>
         </select>
 
         <button class="btn btn-sm btn-primary" type="submit">Szukaj</button>
@@ -82,8 +90,8 @@ $lista = $ksiazki->pobierzStrone($select, $zapytanie['parametry']);
                     <?php endif; ?>
                 </td>
                 <td><?= $ks['tytul'] ?></td>
-                <td><?= $ks['id_autora'] ?></td>
-                <td><?= $ks['id_kategorii'] ?></td>
+                <td><?= $ks['autor']?></td>
+                <td><?= $ks['kategoria'] ?></td>
                 <td><?= $ks['cena'] ?></td>
                 <td>
                     <a href="#" title="dodaj do koszyka"><i class="fas fa-cart-plus"></i></a>

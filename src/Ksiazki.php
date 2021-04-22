@@ -17,21 +17,6 @@ class Ksiazki
     }
 
     /**
-     * Pobiera wszystkie książki.
-     *
-     * @return array
-     */
-    public function pobierzWszystkie(): ?array
-    {
-		//$sql = "SELECT k.* FROM ksiazki k  ";
-        $sql = "SELECT k.*, CONCAT(a.imie, ' ', a.nazwisko) AS autor_ksiazki, kat.nazwa AS nazwa_kategorii FROM ksiazki k
-                INNER JOIN autorzy a ON k.id_autora = a.id
-                INNER JOIN kategorie kat ON k.id_kategorii = kat.id";
-
-        return $this->db->pobierzWszystko($sql);
-    }
-
-    /**
      * Pobiera dane książki o podanym id.
      *
      * @param int $id
@@ -49,7 +34,7 @@ class Ksiazki
     public function pobierzBestsellery()
     {
         $sql = "SELECT * FROM ksiazki ORDER BY RAND() LIMIT 5";
-
+        return $this->db->pobierzWszystko($sql);
         // uzupełnić funkcję
     }
 
@@ -87,11 +72,13 @@ class Ksiazki
     public function pobierzZapytanie(array $params = []): array
     {
         $parametry = [];
-        $sql = "SELECT k.* FROM ksiazki k WHERE 1=1 ";
-
+        $sql = "SELECT k.*, a.imie, a.nazwisko, CONCAT(a.imie,' ', a.nazwisko) AS autor, kat.nazwa as kategoria FROM ksiazki k
+                JOIN autorzy a ON k.id_autora = a.id 
+                JOIN kategorie kat ON k.id_kategorii = kat.id
+                WHERE 1=1 ";
         // dodawanie warunków do zapytanie
         if (!empty($params['fraza'])) {
-            $sql .= "AND k.tytul LIKE :fraza ";
+            $sql .= "AND (k.tytul LIKE :fraza OR k.opis LIKE :fraza OR CONCAT(a.imie,' ', a.nazwisko) LIKE :fraza) ";
             $parametry['fraza'] = "%$params[fraza]%";
         }
         if (!empty($params['id_kategorii'])) {
@@ -101,7 +88,7 @@ class Ksiazki
 
         // dodawanie sortowania
         if (!empty($params['sortowanie'])) {
-            $kolumny = ['k.tytul', 'k.cena'];
+            $kolumny = ['k.tytul', 'k.cena', 'a.nazwisko'];
             $kierunki = ['ASC', 'DESC'];
             [$kolumna, $kierunek] = explode(' ', $params['sortowanie']);
 
@@ -122,6 +109,7 @@ class Ksiazki
      */
     public function pobierzStrone(string $select, array $params = []): array
     {
+        //dd($select);
         return $this->db->pobierzWszystko($select, $params);
     }
 }

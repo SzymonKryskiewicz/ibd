@@ -23,8 +23,10 @@ class Koszyk
 	public function pobierzWszystkie(): array
     {
 		$sql = "
-			SELECT ks.*, ko.liczba_sztuk, ko.id AS id_koszyka
+			SELECT ks.*, ko.liczba_sztuk, ko.id AS id_koszyka, kat.nazwa AS kategoria, CONCAT(aut.imie, ' ', aut.nazwisko) AS autor
 			FROM ksiazki ks JOIN koszyk ko ON ks.id = ko.id_ksiazki
+			JOIN kategorie kat ON ks.id_kategorii = kat.id
+			JOIN autorzy aut ON ks.id_autora = aut.id
 			WHERE ko.id_sesji = '" . session_id() . "'
 			ORDER BY ko.data_dodania DESC";
 
@@ -71,7 +73,7 @@ class Koszyk
 	public function zmienLiczbeSztuk(array $dane): void
 	{
 		foreach($dane as $idKoszyka => $ilosc) {
-			if ($ilosc <= 0) {
+		    if ($ilosc <= 0) {
                 $this->db->usun('koszyk', $idKoszyka);
             } else {
                 $this->db->aktualizuj('koszyk', ['liczba_sztuk' => $ilosc], $idKoszyka);
@@ -79,4 +81,31 @@ class Koszyk
 		}
 	}
 
+    /**Zwraca ilość książek w koszyku.
+     * @return int
+     */
+	public function ileWKoszyku(): int
+    {
+        $wKoszyku = 0;
+        $listaKsiazek = $this->pobierzWszystkie();
+        if(count($listaKsiazek) > 0)
+        {
+            foreach($listaKsiazek as $ks)
+             {
+                 $wKoszyku = $wKoszyku + $ks['liczba_sztuk'];
+             }
+        }
+        return $wKoszyku;
+
+    }
+
+    /**
+     * Zwraca informacje na temat książki o podanym ID z koszyka
+     * @param int $idKsiazki
+     * @return array
+     */
+    public function pobierzKsiazkeZKoszyka(int $idKsiazki): array
+    {
+        return $this->db->pobierzKsiazkeZKoszyka('koszyk', $idKsiazki);
+    }
 }

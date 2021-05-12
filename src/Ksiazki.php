@@ -47,7 +47,6 @@ class Ksiazki
     public function pobierzAutora(int $id): ?array
     {
         return $this->db->pobierz('autorzy', $id);
-
     }
 
     /**
@@ -61,7 +60,6 @@ class Ksiazki
         return $this->db->pobierz('kategorie', $id);
 
     }
-
 
     /**
      * Pobiera zapytanie SELECT oraz jego parametry;

@@ -58,9 +58,22 @@ class Db
     {
         $sql = "SELECT * FROM $table WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
-
         return $stmt->execute([':id' => $id]) ? $stmt->fetch(\PDO::FETCH_ASSOC) : null;
     }
+
+    /**
+     * Pobiera dane książki o podanym ID z koszyka
+     * @param string $table
+     * @param int $id
+     * @return array|null
+     */
+    public function pobierzKsiazkeZKoszyka(string $table, int $id): ?array
+    {
+        $sql = "SELECT * FROM $table WHERE id_ksiazki = :id";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([':id' => $id]) ? $stmt->fetch(\PDO::FETCH_ASSOC) : null;
+    }
+
 
     /**
      * Liczy rekordy zwrócone przez zapytanie.

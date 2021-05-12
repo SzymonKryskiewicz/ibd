@@ -1,12 +1,10 @@
 const dodajDoKoszyka = async (e) => {
     const a = e.target.closest('a.aDodajDoKoszyka')
-
     if (a) {
         e.preventDefault()
         const href = a.getAttribute('href')
         const response = await fetch(href, {method: 'POST'})
         const txt = await response.text()
-
         if (txt === 'ok') {
             const wKoszyku = document.querySelector('#wKoszyku')
             wKoszyku.innerHTML = parseInt(wKoszyku.innerHTML) + 1
@@ -17,9 +15,32 @@ const dodajDoKoszyka = async (e) => {
     }
 }
 
+const usunZKoszyka = async (e) => {
+    const a = e.target.closest('a.aUsunZKoszyka')
+    if (a) {
+        e.preventDefault()
+        const href = a.getAttribute('href')
+        const response = await fetch(href, {method: 'POST'})
+        const txt = await response.text()
+        if (txt === 'ok') {
+            const wKoszyku = document.querySelector('#wKoszyku')
+            wKoszyku.innerHTML = parseInt(wKoszyku.innerHTML - a.parentElement.parentElement.querySelector('#cena_pozycja').innerHTML/a.parentElement.parentElement.querySelector('#cena_sztuka').innerHTML)
+            const razem = document.querySelector('#razem')
+            razem.innerHTML = parseFloat(razem.innerHTML - a.parentElement.parentElement.querySelector('#cena_pozycja').innerHTML).toFixed(2)
+            a.parentElement.parentElement.remove()
+        } else {
+            alert('Wystąpił błąd: ' + txt);
+        }
+    }
+}
+
 document.body.onload = () => {
     const ksiazki = document.querySelector('#ksiazki')
     if (ksiazki) {
         ksiazki.addEventListener('click', dodajDoKoszyka)
+    }
+    const koszyk = document.querySelector('#koszyk')
+    if (koszyk) {
+        koszyk.addEventListener('click', usunZKoszyka)
     }
 }

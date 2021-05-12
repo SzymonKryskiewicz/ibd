@@ -25,7 +25,6 @@
                 <a href="ksiazki.szczegoly.php?id=<?= $ks['id'] ?>" title="szczegóły"><i
                             class="fas fa-folder-open"></i></a>
             </li>
-
         <?php endforeach; ?>
     </ul>
 

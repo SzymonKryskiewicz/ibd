@@ -5,10 +5,12 @@ error_reporting(E_ALL | E_STRICT);
 define('ROK_AKADEMICKI', (date('Y') - 1) . '/' . date('Y'));
 
 require_once 'vendor/autoload.php';
-
+session_start();
 use Ibd\Menu;
-
+use Ibd\Koszyk;
 $liczbaKsiazekWKoszyku = 0;
+$koszyk = new Koszyk();
+$liczbaKsiazekWKoszyku = $koszyk->ileWKoszyku();
 $koszykHtml = "<span class='badge badge-dark' id='wKoszyku'>$liczbaKsiazekWKoszyku</span>";
 ?>
 

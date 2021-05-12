@@ -39,10 +39,12 @@ class Db
             foreach ($params as $k => &$v)
                 $stmt->bindParam($k, $v);
         }
-        return $stmt->execute() ? $stmt->fetchAll(\PDO::FETCH_ASSOC) : null;
 
+        if (!$stmt->execute()) {
+            throw new \RuntimeException("Failed to execute [$sql] {$stmt->errorInfo()[2]}");
+        }
 
-
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     /**
@@ -79,5 +81,70 @@ class Db
         $stmt->execute();
 
         return $stmt->rowCount();
+    }
+
+    /**
+     * Dodaje rekord o podanych parametrach do wybranej tabeli.
+     *
+     * @param string $tabela
+     * @param array  $params
+     * @return int
+     */
+    public function dodaj(string $tabela, array $params): int
+    {
+        $klucze = array_keys($params);
+        $sql = "INSERT INTO $tabela (";
+        $sql .= implode(', ', $klucze);
+        $sql .= ") VALUES (";
+
+        array_walk($klucze, function(&$elem, $klucz) {
+            $elem = ":$elem";
+        });
+        $sql .= implode(', ', $klucze);
+        $sql .= ")";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+
+        return $this->pdo->lastInsertId();
+    }
+
+    /**
+     * Usuwa rekord o podanym id z wybranej tabeli.
+     *
+     * @param string $tabela
+     * @param int    $id
+     * @return bool
+     */
+    public function usun(string $tabela, int $id): bool
+    {
+        $sql = "DELETE FROM $tabela WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+
+        return $stmt->execute([':id' => $id]);
+    }
+
+    /**
+     * Aktualizuje rekord w wybranej tabeli o podanym id.
+     *
+     * @param string $tabela
+     * @param array  $params
+     * @param int    $id
+     * @return bool
+     */
+    public function aktualizuj(string $tabela, array $params, int $id): bool
+    {
+        $sql = "UPDATE $tabela SET ";
+        foreach ($params as $k => $v) {
+            $sql .= "$k = :$k, ";
+        }
+
+        $sql = substr($sql, 0, -2);
+        $sql .= " WHERE id = :id";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        $params['id'] = $id;
+        return $stmt->execute($params);
     }
 }

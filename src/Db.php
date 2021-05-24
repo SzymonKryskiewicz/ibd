@@ -50,7 +50,7 @@ class Db
     /**
      * Pobiera rekord o podanym ID z wybranej tabeli.
      *
-     * @param string  $table
+     * @param string $table
      * @param integer $id
      * @return array
      */
@@ -79,7 +79,7 @@ class Db
      * Liczy rekordy zwrócone przez zapytanie.
      *
      * @param string $sql
-     * @param array  $params
+     * @param array $params
      * @return int
      */
     public function policzRekordy(string $sql, array $params = []): int
@@ -87,7 +87,7 @@ class Db
         $stmt = $this->pdo->prepare($sql);
 
         if (!empty($params) && is_array($params)) {
-            foreach($params as $k => &$v) {
+            foreach ($params as $k => &$v) {
                 $stmt->bindParam($k, $v);
             }
         }
@@ -100,7 +100,7 @@ class Db
      * Dodaje rekord o podanych parametrach do wybranej tabeli.
      *
      * @param string $tabela
-     * @param array  $params
+     * @param array $params
      * @return int
      */
     public function dodaj(string $tabela, array $params): int
@@ -110,7 +110,7 @@ class Db
         $sql .= implode(', ', $klucze);
         $sql .= ") VALUES (";
 
-        array_walk($klucze, function(&$elem, $klucz) {
+        array_walk($klucze, function (&$elem, $klucz) {
             $elem = ":$elem";
         });
         $sql .= implode(', ', $klucze);
@@ -126,7 +126,7 @@ class Db
      * Usuwa rekord o podanym id z wybranej tabeli.
      *
      * @param string $tabela
-     * @param int    $id
+     * @param int $id
      * @return bool
      */
     public function usun(string $tabela, int $id): bool
@@ -141,8 +141,8 @@ class Db
      * Aktualizuje rekord w wybranej tabeli o podanym id.
      *
      * @param string $tabela
-     * @param array  $params
-     * @param int    $id
+     * @param array $params
+     * @param int $id
      * @return bool
      */
     public function aktualizuj(string $tabela, array $params, int $id): bool
@@ -165,7 +165,7 @@ class Db
      * Wykonuje podane zapytanie SQL z parametrami.
      *
      * @param string $sql
-     * @param array  $params
+     * @param array $params
      * @return bool
      */
     public function wykonaj(string $sql, array $params = []): bool
@@ -174,4 +174,35 @@ class Db
 
         return $stmt->execute($params);
     }
+
+    /**
+     * Sprawdza czy użytkownik o danym loginie istnieje
+     */
+
+    public function sprawdz_login(string $login)
+    {
+        $sql = "SELECT count(*) as czy_istnieje FROM uzytkownicy WHERE login = :login";
+        $stmt = $this->pdo->prepare($sql);
+
+        $result = $stmt->execute([':login' => $login]) ? $stmt->fetch(\PDO::FETCH_ASSOC) : null;
+        return $result['czy_istnieje'];
+    }
+
+    /**
+     * Sprawdza czy użytkownik o danym emailu istnieje
+     */
+
+    public function sprawdz_email(string $email)
+    {
+        $sql = "SELECT count(*) as czy_istnieje FROM uzytkownicy WHERE email = :email";
+        $stmt = $this->pdo->prepare($sql);
+
+        $result = $stmt->execute([':email' => $email]) ? $stmt->fetch(\PDO::FETCH_ASSOC) : null;
+        return $result['czy_istnieje'];
+    }
+
 }
+
+
+
+

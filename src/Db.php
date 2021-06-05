@@ -35,12 +35,7 @@ class Db
     {
         $stmt = $this->pdo->prepare($sql);
 
-        if (!empty($params) && is_array($params)) {
-            foreach ($params as $k => $v)
-                $stmt->bindParam($k, $v);
-        }
-
-        if (!$stmt->execute()) {
+        if (!$stmt->execute($params)) {
             throw new \RuntimeException("Failed to execute [$sql] {$stmt->errorInfo()[2]}");
         }
 

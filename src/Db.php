@@ -199,3 +199,39 @@ class Db
         $result = $stmt->execute([':email' => $email]) ? $stmt->fetch(\PDO::FETCH_ASSOC) : null;
         return $result['czy_istnieje'];
     }
+
+    /**
+     * Sprawdza ile książek napisał dany autor.
+     * @param int $id
+     * @return int|mixed
+     */
+    public function sprawdz_liczbe_ksiazek(int $id)
+    {
+        $sql = "SELECT id_autora, count(*) as liczba_ksiazek FROM ksiazki WHERE id_autora = :id GROUP BY id_autora";
+        $stmt = $this->pdo->prepare($sql);
+
+        $result = $stmt->execute([':id' => $id]) ? $stmt->fetch(\PDO::FETCH_ASSOC) : 0;
+        if(isset($result['liczba_ksiazek']))
+            return $result['liczba_ksiazek'];
+        else
+            return 0;
+    }
+
+
+    /**
+     * Sprawdza liczbę książek w danej kategorii.
+     * @param int $id
+     * @return int|mixed
+     */
+    public function sprawdz_liczbe_ksiazek_w_kategorii(int $id)
+    {
+        $sql = "SELECT id_kategorii, count(*) as liczba_ksiazek FROM ksiazki WHERE id_kategorii = :id GROUP BY id_kategorii";
+        $stmt = $this->pdo->prepare($sql);
+
+        $result = $stmt->execute([':id' => $id]) ? $stmt->fetch(\PDO::FETCH_ASSOC) : 0;
+        if(isset($result['liczba_ksiazek']))
+            return $result['liczba_ksiazek'];
+        else
+            return 0;
+    }
+}

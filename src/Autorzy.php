@@ -16,9 +16,27 @@ class Autorzy
 	 *
 	 * @return string
      */
-	public function pobierzSelect(): string
+	public function pobierzSelect(array $params = []): array
     {
-        return "SELECT * FROM autorzy WHERE 1=1 ";
+        $parametry = [];
+        $sql = "SELECT * FROM autorzy AS a WHERE 1=1 ";
+        // dodawanie warunków do zapytanie
+        if (!empty($params['fraza'])) {
+            $sql .= "AND CONCAT(a.imie,' ', a.nazwisko) LIKE :fraza ";
+            $parametry['fraza'] = "%$params[fraza]%";
+        }
+
+        // dodawanie sortowania
+        if (!empty($params['sortowanie'])) {
+            $kolumny = ['a.nazwisko'];
+            $kierunki = ['ASC', 'DESC'];
+            [$kolumna, $kierunek] = explode(' ', $params['sortowanie']);
+
+            if (in_array($kolumna, $kolumny) && in_array($kierunek, $kierunki)) {
+                $sql .= " ORDER BY " . $params['sortowanie'];
+            }
+        }
+        return ['sql' => $sql, 'parametry' => $parametry];
 	}
 
 	/**
@@ -42,6 +60,19 @@ class Autorzy
     {
 		return $this->db->pobierz('autorzy', $id);
 	}
+
+
+    /**
+     * Pobiera stronę z danymi autorów.
+     *
+     * @param string $select
+     * @param array  $params
+     * @return array
+     */
+    public function pobierzStrone(string $select, array $params = []): array
+    {
+        return $this->db->pobierzWszystko($select, $params);
+    }
 
 	/**
 	 * Dodaje autora.
@@ -85,4 +116,16 @@ class Autorzy
 		return $this->db->aktualizuj('autorzy', $update, $id);
 	}
 
+
+    /**
+     * Zwraca ile książek napisał dany autor.
+     * @param int $id
+     * @return int
+     */
+	public function liczbaKsiazek(int $id): int
+    {
+        return $this->db->sprawdz_liczbe_ksiazek($id);
+    }
 }
+
+

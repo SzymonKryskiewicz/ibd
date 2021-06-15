@@ -28,6 +28,9 @@ document.body.onload = () => {
 
     // użytkownicy
     document.querySelectorAll('.aUsunUzytkownika').forEach(a => a.addEventListener('click', usunRekord))
+
+    // książki
+    document.querySelectorAll('.aUsunKsiazke').forEach(a => a.addEventListener('click', usunRekord))
 }
 
 /**

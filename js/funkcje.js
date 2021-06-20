@@ -52,6 +52,9 @@ document.body.onload = () => {
 
     //kategorie
     document.querySelectorAll('.aUsunKategorie').forEach(a => a.addEventListener('click', usunRekord))
+
+    // książki
+    document.querySelectorAll('.aUsunKsiazke').forEach(a => a.addEventListener('click', usunRekord))
 }
 
 /**

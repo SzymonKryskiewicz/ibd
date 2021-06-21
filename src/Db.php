@@ -155,7 +155,7 @@ class Db
         $sql .= " WHERE id = :id";
 
         $stmt = $this->pdo->prepare($sql);
-
+        //dd($params);
         $params['id'] = $id;
         return $stmt->execute($params);
     }

@@ -34,9 +34,14 @@ $lista = $zamowienia->pobierzWszystkie();
 				<td><?=$z['liczba_produktow']?></td>
 				<td><?=$z['liczba_sztuk']?></td>
 				<td><?=$z['data_dodania']?></td>
-				<td>
-					<a href="admin.zamowienia.szczegoly.php?id=<?= $z['id'] ?>" title="szczegoly"><em class="fas fa-pencil"></em></a>
-				</td>
+                <td>
+                    <a href="admin.zamowienia.edycja.php?id=<?= $z['id'] ?>" title="edycja"><em class="fas fa-pencil-alt"></em></a>
+                </td>
+                <td style="white-space: nowrap">
+                    <a href="admin.zamowienia.szczegoly.php?id=<?= $z['id'] ?>" title="szczegóły">
+                        <i class="fas fa-folder-open"></i>
+                    </a>
+                </td>
 			</tr>
 		<?php endforeach; ?>
 	</tbody>

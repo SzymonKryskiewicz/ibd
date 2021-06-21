@@ -103,5 +103,31 @@ class Zamowienia
         return $result['nazwa'];
     }
 
+    /**
+     * Zmienia status zamowienia.
+     *
+     * @param array $dane
+     * @param int   $id
+     * @return bool
+     */
+    public function edytuj(array $dane, int $id): bool
+    {
+        $update = [
+            'id_statusu' => $dane['id_statusu']
+             ];
+        return $this->db->aktualizuj('zamowienia', $update, $id);
+    }
+
+    /**
+     * Pobiera wszystkie statusy.
+     *
+     * @return array
+     */
+    public function pobierzWszystkieStatusy(): array
+    {
+        $sql = "SELECT * FROM zamowienia_statusy";
+
+        return $this->db->pobierzWszystko($sql);
+    }
 
 }

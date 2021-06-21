@@ -50,9 +50,11 @@ class Ksiazki
      */
     public function pobierzBestsellery()
     {
-        $sql = "SELECT * FROM ksiazki ORDER BY RAND() LIMIT 5";
+        $sql = "SELECT * FROM ksiazki as k 
+                JOIN 
+                (SELECT id_ksiazki, sum(liczba_sztuk) FROM zamowienia_szczegoly GROUP BY id_ksiazki ORDER BY 2 DESC LIMIT 5) as z
+                ON k.id = z.id_ksiazki";
         return $this->db->pobierzWszystko($sql);
-        // uzupełnić funkcję
     }
 
     /**
